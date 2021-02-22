@@ -5,7 +5,11 @@ const { User } = require('../model/user');
 const isEmpty = require('../libs/checkLib');
 const bcryptLib = require('../libs/bcryptLib');
 const winstonLogger = require('../libs/winstonLib');
-
+/**
+ * It will trigger when /user/create called
+ * @param {*} req
+ * @param {*} res
+ */
 exports.createUser = async (user) => {
   try {
     let oldUser = await User.find({ email: user.email });
@@ -43,7 +47,11 @@ exports.createUser = async (user) => {
     };
   }
 };
-
+/**
+ * It will trigger when /user/login called
+ * @param {*} req
+ * @param {*} res
+ */
 exports.login = async (email, password) => {
   const user = await User.findOne({ email: email });
   if (!isEmpty(user)) {
