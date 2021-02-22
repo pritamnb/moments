@@ -7,6 +7,7 @@ const {
   deleteMoment,
   updateMoment,
   listMoment,
+  getMoment,
 } = require('../controllers/momentController');
 
 const router = express.Router();
@@ -125,6 +126,34 @@ router.get('/moment-list', auth, async (req, res) => {
       res.status(200).json({
         error: false,
         list: result.list,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      error: true,
+      errorMessage: error,
+      message: 'Something Went Wrong!',
+    });
+  }
+});
+router.get('/get-moment/:moment_id', auth, async (req, res) => {
+  const momentId = req.params.moment_id;
+  const userId = req.userId;
+  try {
+    console.log('moment listing', req);
+    console.log('\n------------------------\n');
+    let result = await getMoment(momentId, userId);
+    console.log('\n------------------------', result);
+
+    if (result.error) {
+      res.status(500).json({
+        error: true,
+        message: result.message,
+      });
+    } else {
+      res.status(200).json({
+        error: false,
+        moment: result.moment,
       });
     }
   } catch (error) {

@@ -128,13 +128,41 @@ exports.listMoment = async (req) => {
     } else {
       return {
         error: true,
-        message: 'Something Went Wrong----',
+        message: 'Something Went Wrong',
       };
     }
   } catch (error) {
     return {
       error: true,
-      message: 'Something Went Wrong+',
+      message: 'Something Went Wrong',
+    };
+  }
+};
+exports.getMoment = async (momentId, userId) => {
+  try {
+    console.log('find moment user-------------', userId);
+    console.log('find moment request-------------', momentId);
+    let result = await Moment.find({
+      userId: userId,
+    });
+    console.log('find moment-------------', result);
+    let moment = result[0].moments
+      .filter((moment) => moment._id.toString() === momentId.toString())
+      .map((x) => x);
+    console.log('find moment-------------', moment);
+
+    if (result) {
+      return { error: false, moment };
+    } else {
+      return {
+        error: true,
+        message: 'Something Went Wrong',
+      };
+    }
+  } catch (error) {
+    return {
+      error: true,
+      message: 'Something Went Wrong catch ' + error,
     };
   }
 };
