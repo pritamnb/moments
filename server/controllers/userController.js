@@ -1,52 +1,11 @@
+const { User } = require('../model/user');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const { User } = require('../model/user');
 const isEmpty = require('../libs/checkLib');
 const bcryptLib = require('../libs/bcryptLib');
 const winstonLogger = require('../libs/winstonLib');
-/**
- * It will trigger when /user/create called
- * @param {*} req
- * @param {*} res
- */
-exports.createUser = async (user) => {
-  try {
-    let oldUser = await User.find({ email: user.email });
-    if (!isEmpty(oldUser)) {
-      winstonLogger.info('User already exists with provided emailId');
-      return {
-        error: true,
-        message: 'User already exists with provided emailId',
-      };
-    }
-    user.password = await bcryptLib.generateHashedPassword(user.password);
-    let User = new User({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      password: user.password,
-      mobile: user.mobile,
-      createdOn: moment(),
-    });
-    await User.save();
-    winstonLogger.info('User created Successfully');
-    User = User.toObject();
-    delete User.password;
 
-    return {
-      error: false,
-      data: User,
-      message: 'User created Successfully',
-    };
-  } catch (error) {
-    winstonLogger.error('Something went Wrong in Create User');
-    return {
-      error: true,
-      message: 'Something went Wrong in Create User',
-    };
-  }
-};
 /**
  * It will trigger when /user/login called
  * @param {*} req
@@ -86,7 +45,55 @@ exports.login = async (email, password) => {
     };
   }
 };
+/**
+ * It will trigger when /user/create called
+ * @param {*} req
+ * @param {*} res
+ */
+exports.create = async (userData) => {
+  try {
+    // console.log('user----------', user);
+    let oldUser = await User.find({ email: userData.email });
+    console.log('oldUser', oldUser);
+    if (!isEmpty(oldUser)) {
+      winstonLogger.info('User already exists with provided emailId');
+      return {
+        error: true,
+        message: 'User already exists with provided emailId',
+      };
+    }
+    userData.password = await bcryptLib.generateHashedPassword(
+      userData.password
+    );
+    let newUser = new User({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      password: userData.password,
+      mobile: userData.mobile,
+      createdOn: moment(),
+    });
+    await newUser.save();
+    winstonLogger.info('User created Successfully');
+    newUser = newUser.toObject();
+    delete newUser.password;
 
+    return {
+      error: false,
+      data: newUser,
+      message: 'User created Successfully',
+    };
+  } catch (error) {
+    console.log('Catch error============', error);
+    winstonLogger.error('Something went Wrong in Create User');
+    return {
+      error: true,
+      errorMsg: error,
+
+      message: 'Something went Wrong in Create User',
+    };
+  }
+};
 /**
  * It will trigger when /api/user/get-email/:email called
  * @param {*} req

@@ -1,17 +1,14 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 
-const {
-  createUser,
-  login,
-  getEmail,
-} = require('../controllers/userController');
+const { create, login, getEmail } = require('../controllers/userController');
 
 const router = express.Router();
 
 router.post('/create', async (req, res) => {
   try {
-    let result = await createUser(req.body);
+    console.log('req-====', req.body);
+    let result = await create(req.body);
 
     if (result.error) {
       res.status(500).json({
@@ -27,6 +24,7 @@ router.post('/create', async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       error: true,
+      errorMsg: error,
       message: 'Something Went Wrong!',
     });
   }

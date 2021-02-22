@@ -51,19 +51,11 @@ exports.createMoment = async (moment) => {
 
 exports.deleteMoment = async (moment, userId) => {
   try {
-    console.log(
-      '\n----------requested moment------------\n',
-      moment,
-      '\n====',
-      userId
-    );
-
     let updateMoment = await Moment.updateOne(
       { userId: userId },
       { $pull: { moments: { _id: moment._id } } },
       { new: true }
     );
-    console.log('\n----------updateMoment------------\n', updateMoment);
 
     if (updateMoment.nModified == 1) {
       return {
@@ -117,18 +109,13 @@ exports.updateMoment = async (moment) => {
 };
 exports.listMoment = async (req) => {
   try {
-    console.log('listing moments ======req', req);
-
     let list = await Moment.findOne({ userId: req.userId });
-
-    console.log('listing moments ====== output', list);
 
     if (list) {
       return { error: false, list };
     } else {
       return {
-        error: true,
-        message: 'Something Went Wrong',
+        message: 'User does not contain any list',
       };
     }
   } catch (error) {
@@ -140,16 +127,12 @@ exports.listMoment = async (req) => {
 };
 exports.getMoment = async (momentId, userId) => {
   try {
-    console.log('find moment user-------------', userId);
-    console.log('find moment request-------------', momentId);
     let result = await Moment.find({
       userId: userId,
     });
-    console.log('find moment-------------', result);
     let moment = result[0].moments
       .filter((moment) => moment._id.toString() === momentId.toString())
       .map((x) => x);
-    console.log('find moment-------------', moment);
 
     if (result) {
       return { error: false, moment };
